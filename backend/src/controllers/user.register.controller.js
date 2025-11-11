@@ -21,26 +21,14 @@ const generateAccessAndRefreshTokens = async (user) => {
   }
 };
 
-const registerUser = asyncHandler(async (req, res) => {
-  const { role, email, password, ...otherDetails } = req.body;
+const registerStudent = asyncHandler(async (req, res) => {
+  const { email, password, ...otherDetails } = req.body;
 
-  if (!role || !email || !password) {
-    throw new ApiError(400, "Role, email, and password are required");
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
   }
 
-  let model;
-  switch (role) {
-    case "student":
-      model = StudentModel;
-      break;
-    case "startup":
-      model = StartupModel;
-      break;
-    default:
-      throw new ApiError(400, "Invalid user role");
-  }
-
-  const existedUser = await model.findOne({ email });
+  const existedUser = await StudentModel.findOne({ email });
 
   if (existedUser) {
     throw new ApiError(409, "User with email already exists");
@@ -71,28 +59,71 @@ const registerUser = asyncHandler(async (req, res) => {
     }
   }
 
-  // Validate required fields based on role
-  if (role === "student") {
-    const { name, year, department } = normalizedDetails;
-    if (!name || !year || !department) {
-      throw new ApiError(
-        400,
-        "Name, year, and department are required for students"
-      );
-    }
-  } else if (role === "startup") {
-    const { name, founderName, description } = normalizedDetails;
-    if (!name || !founderName || !description) {
-      throw new ApiError(
-        400,
-        "Name, founderName, and description are required for startups"
-      );
-    }
+  // Validate required fields
+  const { name, year, department } = normalizedDetails;
+  if (!name || !year || !department) {
+    throw new ApiError(
+      400,
+      "Name, year, and department are required for students"
+    );
   }
 
-  // Handle logo upload for startups if present
+  const user = await StudentModel.create({
+    email,
+    password,
+    ...normalizedDetails,
+  });
+
+  if (!user) {
+    throw new ApiError(500, "Something went wrong while registering the user");
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user
+  );
+
+  const userData = user.toObject();
+  delete userData.password;
+  delete userData.refreshToken;
+
+  return res.status(201).json(
+    new ApiResponse(
+      201,
+      {
+        user: userData,
+        accessToken,
+        refreshToken,
+      },
+      "Student registered successfully"
+    )
+  );
+});
+
+const registerStartup = asyncHandler(async (req, res) => {
+  const { email, password, ...otherDetails } = req.body;
+
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
+
+  const existedUser = await StartupModel.findOne({ email });
+
+  if (existedUser) {
+    throw new ApiError(409, "User with email already exists");
+  }
+
+  // Validate required fields
+  const { name, founderName, description } = otherDetails;
+  if (!name || !founderName || !description) {
+    throw new ApiError(
+      400,
+      "Name, founderName, and description are required for startups"
+    );
+  }
+
+  // Handle logo upload if present
   let logoUrl;
-  if (role === "startup" && req.files?.logo) {
+  if (req.files?.logo) {
     const { uploadOnCloudinary } = await import("../utils/cloudinary.js");
     const file = Array.isArray(req.files.logo)
       ? req.files.logo[0]
@@ -107,10 +138,10 @@ const registerUser = asyncHandler(async (req, res) => {
     logoUrl = uploadResponse.secure_url;
   }
 
-  const user = await model.create({
+  const user = await StartupModel.create({
     email,
     password,
-    ...normalizedDetails,
+    ...otherDetails,
     ...(logoUrl && { logoUrl }),
   });
 
@@ -134,7 +165,7 @@ const registerUser = asyncHandler(async (req, res) => {
         accessToken,
         refreshToken,
       },
-      "User registered successfully"
+      "Startup registered successfully"
     )
   );
 });
@@ -183,4 +214,4 @@ const uploadResume = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, uploadResume };
+export { registerStudent, registerStartup, uploadResume };

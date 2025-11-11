@@ -1,15 +1,21 @@
 import { Router } from "express";
-import { registerUser, uploadResume } from "../controllers/user.controller.js";
+import {
+  registerStudent,
+  registerStartup,
+  uploadResume,
+} from "../controllers/user.register.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-// Registration route - only logo upload for startups (optional)
-// Students can register with JSON, startups can optionally include logo
+// Student registration route - JSON only, no file upload
+router.route("/register/student").post(registerStudent);
+
+// Startup registration route - can include logo upload
 router
-  .route("/register")
-  .post(upload.fields([{ name: "logo", maxCount: 1 }]), registerUser);
+  .route("/register/startup")
+  .post(upload.fields([{ name: "logo", maxCount: 1 }]), registerStartup);
 
 // Resume upload route - requires authentication
 // The studentId is extracted from the authenticated user (req.user)
