@@ -2,6 +2,7 @@ import {
   getStudentProfile,
   updateStudentProfile,
   uploadStudentProfilePicture,
+  deleteStudentAccount,
 } from "../controllers/user.crud.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -20,6 +21,8 @@ router
     upload.single("profilePicture"),
     uploadStudentProfilePicture
   );
+
+router.route("/profile/delete").delete(verifyJWT, deleteStudentAccount);
 
 router.route("/profile/:id").get(verifyJWT, getStudentProfile); //didnt tested
 

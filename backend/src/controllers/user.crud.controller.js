@@ -170,4 +170,39 @@ const uploadStudentProfilePicture = asyncHandler(async (req, res) => {
   );
 });
 
-export { getStudentProfile, updateStudentProfile, uploadStudentProfilePicture };
+const deleteStudentAccount = asyncHandler(async (req, res) => {
+  // Get student ID from authenticated user
+  const studentId = req.user?._id;
+
+  if (!studentId) {
+    throw new ApiError(401, "Unauthorized - Student ID not found");
+  }
+
+  // Find student before deletion to ensure they exist
+  const student = await StudentModel.findById(studentId);
+
+  if (!student) {
+    throw new ApiError(404, "Student not found");
+  }
+
+  // Delete student from database
+  await StudentModel.findByIdAndDelete(studentId);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        deletedEmail: student.email,
+        deletedAt: new Date().toISOString(),
+      },
+      "Student account deleted successfully"
+    )
+  );
+});
+
+export {
+  getStudentProfile,
+  updateStudentProfile,
+  uploadStudentProfilePicture,
+  deleteStudentAccount,
+};
