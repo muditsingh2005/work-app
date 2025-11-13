@@ -269,11 +269,93 @@ const getStartupProfile = asyncHandler(async (req, res) => {
     );
 });
 
+const updateStartupProfile = asyncHandler(async (req, res) => {
+  const startupId = req.user?._id;
+
+  if (!startupId) {
+    throw new ApiError(401, "Unauthorized - Startup ID not found");
+  }
+
+  const allowedFields = ["name", "founderName", "description", "website"];
+
+  const updateData = {};
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined && req.body[field] !== null) {
+      updateData[field] = req.body[field];
+    }
+  });
+
+  if (Object.keys(updateData).length === 0) {
+    throw new ApiError(400, "At least one field is required for update");
+  }
+
+  if (updateData.name && typeof updateData.name !== "string") {
+    throw new ApiError(400, "Name must be a string");
+  }
+
+  if (updateData.name && updateData.name.trim().length === 0) {
+    throw new ApiError(400, "Name cannot be empty");
+  }
+
+  if (updateData.founderName && typeof updateData.founderName !== "string") {
+    throw new ApiError(400, "Founder name must be a string");
+  }
+
+  if (updateData.founderName && updateData.founderName.trim().length === 0) {
+    throw new ApiError(400, "Founder name cannot be empty");
+  }
+
+  if (updateData.description && typeof updateData.description !== "string") {
+    throw new ApiError(400, "Description must be a string");
+  }
+
+  if (updateData.description && updateData.description.trim().length === 0) {
+    throw new ApiError(400, "Description cannot be empty");
+  }
+
+  if (updateData.description && updateData.description.length > 500) {
+    throw new ApiError(400, "Description cannot exceed 500 characters");
+  }
+
+  if (updateData.website && typeof updateData.website !== "string") {
+    throw new ApiError(400, "Website must be a string");
+  }
+
+  if (updateData.website) {
+    const urlRegex = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+/;
+    if (!urlRegex.test(updateData.website)) {
+      throw new ApiError(400, "Website must be a valid URL");
+    }
+  }
+
+  // Find and update startup
+  const updatedStartup = await StartupModel.findByIdAndUpdate(
+    startupId,
+    { $set: updateData },
+    { new: true, runValidators: true }
+  ).select("-password -refreshToken");
+
+  if (!updatedStartup) {
+    throw new ApiError(404, "Startup not found");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedStartup,
+        "Startup profile updated successfully"
+      )
+    );
+});
+
 export {
   getStudentProfile,
   updateStudentProfile,
   uploadStudentProfilePicture,
   deleteStudentAccount,
   getStartupProfile,
+  updateStartupProfile,
   uploadResume,
 };
