@@ -239,4 +239,48 @@ const updateProject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedProject, "Project updated successfully"));
 });
 
-export { createProject, updateProject };
+const deleteProject = asyncHandler(async (req, res) => {
+  const startupId = req.user?._id;
+
+  if (!startupId) {
+    throw new ApiError(401, "Unauthorized - Startup ID not found");
+  }
+
+  const projectId = req.params?.id;
+
+  if (!projectId) {
+    throw new ApiError(400, "Project ID is required");
+  }
+
+  const project = await ProjectModel.findById(projectId);
+
+  if (!project) {
+    throw new ApiError(404, "Project not found");
+  }
+
+  if (project.startup.toString() !== startupId.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this project");
+  }
+
+  await ProjectModel.findByIdAndDelete(projectId);
+
+  await StartupModel.findByIdAndUpdate(
+    startupId,
+    { $pull: { postedProjects: projectId } },
+    { new: true }
+  );
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        deletedProjectId: projectId,
+        deletedProjectTitle: project.title,
+        deletedAt: new Date().toISOString(),
+      },
+      "Project deleted successfully"
+    )
+  );
+});
+
+export { createProject, updateProject, deleteProject };
