@@ -3,17 +3,19 @@ import {
   updateStartupProfile,
   deleteStartupAccount,
 } from "../controllers/user.crud.controller.js";
-import { verifyJWT } from "../middleware/auth.middleware.js";
+import { verifyJWT, isStartup } from "../middleware/auth.middleware.js";
 import { Router } from "express";
 
 const router = Router();
 
-router.route("/profile").get(verifyJWT, getStartupProfile);
+router.route("/profile").get(verifyJWT, isStartup, getStartupProfile);
 
-router.route("/profile/update").put(verifyJWT, updateStartupProfile);
+router.route("/profile/update").put(verifyJWT, isStartup, updateStartupProfile);
 
-router.route("/profile/delete").delete(verifyJWT, deleteStartupAccount);
+router
+  .route("/profile/delete")
+  .delete(verifyJWT, isStartup, deleteStartupAccount);
 
-router.route("/profile/:id").get(verifyJWT, getStartupProfile);
+router.route("/profile/:id").get(verifyJWT, isStartup, getStartupProfile);
 
 export default router;

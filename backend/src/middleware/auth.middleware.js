@@ -27,7 +27,10 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
       } else if (jwtError.name === "JsonWebTokenError") {
         throw new ApiError(401, "Invalid token signature");
       } else {
-        throw new ApiError(401, `Token verification failed: ${jwtError.message}`);
+        throw new ApiError(
+          401,
+          `Token verification failed: ${jwtError.message}`
+        );
       }
     }
 
@@ -65,4 +68,34 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     }
     throw new ApiError(401, error?.message || "Invalid access token");
   }
+});
+
+export const isStudent = asyncHandler(async (req, res, next) => {
+  if (!req.user) {
+    throw new ApiError(401, "Unauthorized - User not found");
+  }
+
+  if (req.user.role !== "student") {
+    throw new ApiError(
+      403,
+      "Access denied - Only students can access this resource"
+    );
+  }
+
+  next();
+});
+
+export const isStartup = asyncHandler(async (req, res, next) => {
+  if (!req.user) {
+    throw new ApiError(401, "Unauthorized - User not found");
+  }
+
+  if (req.user.role !== "startup") {
+    throw new ApiError(
+      403,
+      "Access denied - Only startups can access this resource"
+    );
+  }
+
+  next();
 });
