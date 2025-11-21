@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import StudentModel from "../models/Student.model.js";
 import StartupModel from "../models/Startup.model.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshTokens = async (user) => {
   try {
@@ -249,4 +250,77 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
-export { registerStudent, registerStartup, loginUser, logoutUser };
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  // Refresh token presented by user
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "Unauthorized request - no refresh token provided");
+  }
+
+  try {
+    // Decode the refresh token
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    // Check in both Student and Startup models
+    let user = await StudentModel.findById(decodedToken?._id);
+
+    if (!user) {
+      user = await StartupModel.findById(decodedToken?._id);
+    }
+
+    if (!user) {
+      throw new ApiError(401, "Invalid refresh token");
+    }
+
+    // Verify the refresh token matches the one stored
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new ApiError(401, "Refresh token is expired or used");
+    }
+
+    // Generate new tokens
+    const { accessToken, refreshToken: newRefreshToken } =
+      await generateAccessAndRefreshTokens(user);
+
+    // Remove sensitive fields
+    const userData = user.toObject();
+    delete userData.password;
+    delete userData.refreshToken;
+
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            accessToken,
+            refreshToken: newRefreshToken,
+            user: userData,
+          },
+          "Access token refreshed successfully"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid refresh token");
+  }
+});
+
+export {
+  registerStudent,
+  registerStartup,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+};

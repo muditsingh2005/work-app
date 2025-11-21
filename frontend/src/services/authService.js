@@ -96,7 +96,79 @@ class AuthService {
     }
   }
 
-  // Token management
+  // Get user profile
+  async getUserProfile() {
+    try {
+      const user = this.getUser();
+      if (!user || !user.role) {
+        throw new Error("User role not found");
+      }
+
+      // Determine endpoint based on role
+      const endpoint =
+        user.role === "student"
+          ? "/api/v2/student/profile"
+          : "/api/v3/startup/profile";
+
+      const response = await api.get(endpoint);
+
+      if (response.data.success && response.data.data) {
+        // Update stored user data
+        this.setUser(response.data.data);
+        return { success: true, user: response.data.data };
+      }
+
+      return { success: false, message: "Failed to fetch profile" };
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  // Refresh access token
+  async refreshToken() {
+    try {
+      const refreshToken = this.getRefreshToken();
+
+      if (!refreshToken) {
+        throw new Error("No refresh token available");
+      }
+
+      const response = await api.post("/api/v1/user/refresh-token", {
+        refreshToken,
+      });
+
+      if (response.data.success && response.data.data) {
+        const {
+          accessToken,
+          refreshToken: newRefreshToken,
+          user,
+        } = response.data.data;
+
+        // Update tokens
+        this.setTokens(accessToken, newRefreshToken);
+
+        // Update user data if provided
+        if (user) {
+          this.setUser(user);
+        }
+
+        return {
+          success: true,
+          accessToken,
+          message: "Token refreshed successfully",
+        };
+      }
+
+      return { success: false, message: "Token refresh failed" };
+    } catch (error) {
+      // Clear auth on refresh failure
+      this.clearAuth();
+      return {
+        success: false,
+        message: error.message || "Token refresh failed",
+      };
+    }
+  } // Token management
   setTokens(accessToken, refreshToken) {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
