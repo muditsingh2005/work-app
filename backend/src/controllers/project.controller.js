@@ -331,6 +331,27 @@ const getAllProjects = asyncHandler(async (req, res) => {
   );
 });
 
+const getProjectById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    throw new ApiError(400, "Project ID is required");
+  }
+
+  const project = await ProjectModel.findById(id)
+    .populate("startup", "name domain email founderName logoUrl")
+    .populate("applicants.student", "firstName lastName email")
+    .populate("selectedStudents", "firstName lastName email");
+
+  if (!project) {
+    throw new ApiError(404, "Project not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, project, "Project fetched successfully"));
+});
+
 const applyToProject = asyncHandler(async (req, res) => {
   const studentId = req.user?._id;
 
@@ -581,6 +602,7 @@ export {
   deleteProject,
   getStartupProjects,
   getAllProjects,
+  getProjectById,
   applyToProject,
   getStudentAppliedProjects,
   getProjectApplicants,

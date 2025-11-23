@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 // Landing
 import { LandingPage } from "./components/landing";
@@ -15,6 +16,10 @@ import { LandingPage } from "./components/landing";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import RoleSelection from "./pages/auth/RoleSelection";
+
+// Projects
+import ProjectListingPage from "./pages/projects/ProjectListingPage";
+import ProjectDetailsPage from "./pages/projects/ProjectDetailsPage";
 
 // Dashboard Layout
 import DashboardLayout from "./components/layout/DashboardLayout";
@@ -28,11 +33,59 @@ function App() {
       <AuthProvider>
         <div className="App">
           <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RoleSelection />} />
-            <Route path="/register/:role" element={<Register />} />
+            {/* Public Routes - Redirect to /projects if authenticated */}
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <LandingPage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <RoleSelection />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register/:role"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
+
+            {/* Protected Projects Page - Main page after login */}
+            <Route
+              path="/projects"
+              element={
+                <ProtectedRoute>
+                  <ProjectListingPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Project Details Page */}
+            <Route
+              path="/projects/:projectId"
+              element={
+                <ProtectedRoute>
+                  <ProjectDetailsPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Protected Dashboard with Layout */}
             <Route
@@ -56,8 +109,8 @@ function App() {
               element={<Navigate to="/dashboard" replace />}
             />
 
-            {/* Catch all - redirect to landing */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Catch all - redirect based on auth status */}
+            <Route path="*" element={<Navigate to="/projects" replace />} />
           </Routes>
         </div>
       </AuthProvider>

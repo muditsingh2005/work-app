@@ -4,6 +4,7 @@ import {
   deleteProject,
   getStartupProjects,
   getAllProjects,
+  getProjectById,
   applyToProject,
   getStudentAppliedProjects,
   getProjectApplicants,
@@ -18,6 +19,7 @@ import { Router } from "express";
 
 const router = Router();
 
+// Specific routes MUST come before parameterized routes
 router.route("/all-projects").get(getAllProjects);
 
 router.route("/create").post(verifyJWT, isStartup, createProject);
@@ -41,5 +43,7 @@ router
 router.route("/update/:id").put(verifyJWT, isStartup, updateProject);
 
 router.route("/delete/:id").delete(verifyJWT, isStartup, deleteProject);
+
+router.route("/:id").get(getProjectById);
 
 export default router;

@@ -169,10 +169,8 @@ const Register = () => {
       }
 
       if (result.success) {
-        // Redirect based on role
-        const redirectPath =
-          role === "student" ? "/student/dashboard" : "/startup/dashboard";
-        navigate(redirectPath, { replace: true });
+        // Redirect to projects page after successful registration
+        navigate("/projects", { replace: true });
       } else {
         setApiError(result.message);
       }

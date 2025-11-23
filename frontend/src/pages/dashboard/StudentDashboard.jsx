@@ -13,9 +13,7 @@ const StudentDashboard = () => {
     totalApplications: 0,
     acceptedApplications: 0,
     pendingApplications: 0,
-    availableProjects: 0,
   });
-  const [recentProjects, setRecentProjects] = useState([]);
   const [myApplications, setMyApplications] = useState([]);
   const [error, setError] = useState(null);
   const [hasFetched, setHasFetched] = useState(false);
@@ -27,12 +25,8 @@ const StudentDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const [projectsRes, applicationsRes] = await Promise.all([
-        studentDashboardAPI.getAllProjects(),
-        studentDashboardAPI.getAppliedProjects(),
-      ]);
+      const applicationsRes = await studentDashboardAPI.getAppliedProjects();
 
-      const projects = projectsRes.data?.projects || [];
       const appliedProjects = applicationsRes.data?.projects || [];
 
       // For applications, we need to extract the application status for each project
@@ -57,11 +51,9 @@ const StudentDashboard = () => {
         pendingApplications: applications.filter(
           (app) => app.applicationStatus === "pending"
         ).length,
-        availableProjects: projects.length,
       };
 
       setLocalStats(statsData);
-      setRecentProjects(projects.slice(0, 6));
       setMyApplications(applications.slice(0, 5));
       setHasFetched(true);
     } catch (err) {
@@ -161,14 +153,6 @@ const StudentDashboard = () => {
             <div className="stat-label">Pending</div>
           </div>
         </div>
-
-        <div className="stat-card">
-          <div className="stat-icon available">🔍</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.availableProjects}</div>
-            <div className="stat-label">Available Projects</div>
-          </div>
-        </div>
       </motion.div>
 
       <motion.div
@@ -219,84 +203,6 @@ const StudentDashboard = () => {
             </div>
           )}
         </div>
-      </motion.div>
-
-      <motion.div
-        className="section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-      >
-        <div className="section-header">
-          <h2>🚀 Available Projects</h2>
-        </div>
-
-        {recentProjects.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">📋</div>
-            <h3>No projects available</h3>
-            <p>Check back later for new opportunities</p>
-          </div>
-        ) : (
-          <div className="projects-grid">
-            {recentProjects.map((project) => (
-              <motion.div
-                key={project._id}
-                className="project-card"
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="project-header">
-                  <h3>{project.title}</h3>
-                  <span className="project-stipend">
-                    ₹{project.stipend?.toLocaleString() || 0}
-                  </span>
-                </div>
-
-                <p className="project-description">
-                  {project.description?.substring(0, 120)}
-                  {project.description?.length > 120 ? "..." : ""}
-                </p>
-
-                <div className="project-meta">
-                  <span className="meta-item">
-                    <span className="meta-icon">🏢</span>
-                    {project.startup?.name || "Startup"}
-                  </span>
-                  <span className="meta-item">
-                    <span className="meta-icon">📅</span>
-                    {project.duration || "Flexible"}
-                  </span>
-                </div>
-
-                {project.requiredSkills &&
-                  project.requiredSkills.length > 0 && (
-                    <div className="project-skills">
-                      {project.requiredSkills
-                        .slice(0, 3)
-                        .map((skill, index) => (
-                          <span key={index} className="skill-tag">
-                            {skill}
-                          </span>
-                        ))}
-                      {project.requiredSkills.length > 3 && (
-                        <span className="skill-tag">
-                          +{project.requiredSkills.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                <div className="project-footer">
-                  <span className="project-deadline">
-                    Deadline: {formatDate(project.deadline)}
-                  </span>
-                  <button className="apply-button">Apply Now</button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
       </motion.div>
 
       <motion.div

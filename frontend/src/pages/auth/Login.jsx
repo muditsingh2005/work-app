@@ -70,12 +70,8 @@ const Login = () => {
       const result = await login(formData.email, formData.password);
 
       if (result.success) {
-        // Redirect based on user role
-        const redirectPath =
-          result.user.role === "student"
-            ? "/student/dashboard"
-            : "/startup/dashboard";
-        navigate(redirectPath, { replace: true });
+        // Redirect to projects page after successful login
+        navigate("/projects", { replace: true });
       } else {
         setApiError(result.message);
       }
