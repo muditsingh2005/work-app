@@ -471,7 +471,7 @@ const getProjectApplicants = asyncHandler(async (req, res) => {
   // Populate applicants with student details
   const populatedProject = await ProjectModel.findById(projectId).populate(
     "applicants.student",
-    "firstName lastName email skills year semester batch mobileNumber"
+    "firstName lastName email skills year semester batch mobileNumber department resumeUrl"
   );
 
   return res.status(200).json(

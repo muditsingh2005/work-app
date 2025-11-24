@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { startupDashboardAPI } from "../../services/dashboardService";
 import { DashboardSkeleton } from "../../components/common/SkeletonLoader";
@@ -7,6 +7,7 @@ import "./StartupDashboard.css";
 
 const StartupDashboard = () => {
   const { userProfile } = useOutletContext();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [stats, setLocalStats] = useState({
@@ -275,7 +276,14 @@ const StartupDashboard = () => {
                   </div>
 
                   <div className="project-actions">
-                    <button className="action-btn view">View Applicants</button>
+                    <button
+                      className="action-btn view"
+                      onClick={() =>
+                        navigate(`/projects/${project._id}/applicants`)
+                      }
+                    >
+                      View Applicants
+                    </button>
                     <button className="action-btn edit">Edit</button>
                     <button className="action-btn delete">Delete</button>
                   </div>

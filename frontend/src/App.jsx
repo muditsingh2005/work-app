@@ -20,6 +20,7 @@ import RoleSelection from "./pages/auth/RoleSelection";
 // Projects
 import ProjectListingPage from "./pages/projects/ProjectListingPage";
 import ProjectDetailsPage from "./pages/projects/ProjectDetailsPage";
+import ProjectApplicantsPage from "./pages/projects/ProjectApplicantsPage";
 
 // Dashboard Layout
 import DashboardLayout from "./components/layout/DashboardLayout";
@@ -83,6 +84,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProjectDetailsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Project Applicants Page */}
+            <Route
+              path="/projects/:projectId/applicants"
+              element={
+                <ProtectedRoute>
+                  <ProjectApplicantsPage />
                 </ProtectedRoute>
               }
             />
