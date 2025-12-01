@@ -24,11 +24,11 @@ const Sidebar = ({
       return [
         ...baseItems,
         { path: "/dashboard/projects", label: "Browse Projects", icon: "🔍" },
-        {
-          path: "/dashboard/applications",
-          label: "My Applications",
-          icon: "📝",
-        },
+        // {
+        //   path: "/dashboard/applications",
+        //   label: "My Applications",
+        //   icon: "📝",
+        // },
         { path: "/dashboard/profile", label: "Profile", icon: "👤" },
       ];
     } else if (user?.role === "startup") {
