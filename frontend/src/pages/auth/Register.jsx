@@ -26,6 +26,7 @@ const Register = () => {
     founderName: "",
     description: "",
     logo: null,
+    website: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -111,6 +112,10 @@ const Register = () => {
         newErrors.founderName = "Founder name is required";
       }
 
+      if (!formData.website.trim()) {
+        newErrors.website = "Website is required";
+      }
+
       if (!formData.description.trim()) {
         newErrors.description = "Description is required";
       } else if (formData.description.length < 20) {
@@ -160,6 +165,7 @@ const Register = () => {
         startupFormData.append("name", formData.name);
         startupFormData.append("founderName", formData.founderName);
         startupFormData.append("description", formData.description);
+        startupFormData.append("website", formData.website);
 
         if (formData.logo) {
           startupFormData.append("logo", formData.logo);
@@ -325,6 +331,17 @@ const Register = () => {
                 error={errors.founderName}
                 placeholder="John Doe"
                 icon="👤"
+                required
+              />
+              <Input
+                label="Website"
+                type="text"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                error={errors.website}
+                placeholder="https://www.example.com"
+                icon="🌐"
                 required
               />
 
