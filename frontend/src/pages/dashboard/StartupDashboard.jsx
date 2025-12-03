@@ -71,6 +71,21 @@ const StartupDashboard = () => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
+  useEffect(() => {
+    // Check for newly created project in localStorage
+    const newProjectData = localStorage.getItem("newProject");
+    if (newProjectData) {
+      try {
+        const newProject = JSON.parse(newProjectData);
+        handleProjectCreated(newProject);
+        localStorage.removeItem("newProject");
+        showToast("Project created successfully", "success");
+      } catch (err) {
+        console.error("Error parsing new project data:", err);
+      }
+    }
+  }, []);
+
   const getProjectStatusClass = (status) => {
     const statusMap = {
       open: "status-open",
@@ -176,6 +191,26 @@ const StartupDashboard = () => {
 
     showToast("Project updated successfully", "success");
     handleEditClose();
+  };
+
+  const handleCreateProject = () => {
+    navigate("/startup/create-project");
+  };
+
+  const handleProjectCreated = (newProject) => {
+    // Add new project to the beginning of the list
+    setMyProjects((prev) => [newProject, ...prev]);
+
+    // Update stats
+    setLocalStats((prev) => ({
+      totalProjects: prev.totalProjects + 1,
+      activeProjects:
+        newProject.status === "open"
+          ? prev.activeProjects + 1
+          : prev.activeProjects,
+      totalApplicants: prev.totalApplicants,
+      hiredStudents: prev.hiredStudents,
+    }));
   };
 
   if (loading) {
@@ -380,7 +415,9 @@ const StartupDashboard = () => {
       >
         <div className="section-header">
           <h2>📋 Your Projects</h2>
-          <button className="create-button">+ Create Project</button>
+          <button className="create-button" onClick={handleCreateProject}>
+            + Create Project
+          </button>
         </div>
 
         {myProjects.length === 0 ? (
@@ -388,7 +425,12 @@ const StartupDashboard = () => {
             <div className="empty-icon">📝</div>
             <h3>No projects yet</h3>
             <p>Create your first project to start hiring talented students</p>
-            <button className="create-project-btn">Create First Project</button>
+            <button
+              className="create-project-btn"
+              onClick={handleCreateProject}
+            >
+              Create First Project
+            </button>
           </div>
         ) : (
           <div className="projects-list">

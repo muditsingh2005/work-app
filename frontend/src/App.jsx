@@ -21,6 +21,7 @@ import RoleSelection from "./pages/auth/RoleSelection";
 import ProjectListingPage from "./pages/projects/ProjectListingPage";
 import ProjectDetailsPage from "./pages/projects/ProjectDetailsPage";
 import ProjectApplicantsPage from "./pages/projects/ProjectApplicantsPage";
+import CreateProject from "./pages/projects/CreateProject";
 
 // Dashboard Layout
 import DashboardLayout from "./components/layout/DashboardLayout";
@@ -94,6 +95,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProjectApplicantsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Create Project Page */}
+            <Route
+              path="/startup/create-project"
+              element={
+                <ProtectedRoute>
+                  <CreateProject />
                 </ProtectedRoute>
               }
             />

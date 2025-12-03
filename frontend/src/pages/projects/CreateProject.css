@@ -1,0 +1,371 @@
+/* ==================== Create Project Page ==================== */
+.create-project-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 3rem;
+}
+
+.create-project-container {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.create-project-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.create-project-header h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0 0 0.75rem 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.create-project-header p {
+  font-size: 1.05rem;
+  color: #718096;
+  margin: 0;
+}
+
+/* ==================== Form Styles ==================== */
+.create-project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.required {
+  color: #f56565;
+  font-size: 1.1rem;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.875rem 1.125rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #2d3748;
+  background: white;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input:disabled,
+.form-group textarea:disabled {
+  background: #f7fafc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-group input.error,
+.form-group textarea.error {
+  border-color: #f56565;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+.error-message {
+  font-size: 0.875rem;
+  color: #f56565;
+  margin-top: -0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.error-message::before {
+  content: "⚠";
+}
+
+/* ==================== Two Column Layout ==================== */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* ==================== Skills Input ==================== */
+.skills-input-wrapper {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.skills-input-wrapper input {
+  flex: 1;
+}
+
+.add-skill-btn {
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.add-skill-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.add-skill-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+}
+
+.remove-skill-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.remove-skill-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ==================== Form Actions ==================== */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.cancel-btn,
+.submit-btn {
+  flex: 1;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.cancel-btn {
+  background: white;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+  transform: translateY(-2px);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:disabled,
+.cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==================== Toast Notification ==================== */
+.create-project-toast {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 1rem 1.75rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 10000;
+  font-weight: 600;
+  border: 2px solid;
+}
+
+.create-project-toast.success {
+  border-color: #38ef7d;
+  color: #11998e;
+}
+
+.create-project-toast.error {
+  border-color: #f56565;
+  color: #c53030;
+}
+
+.toast-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 768px) {
+  .create-project-page {
+    padding: 1.5rem 1rem;
+    padding-top: 2rem;
+  }
+
+  .create-project-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .create-project-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .create-project-header p {
+    font-size: 0.95rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .skills-input-wrapper {
+    flex-direction: column;
+  }
+
+  .add-skill-btn {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-project-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .create-project-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .create-project-toast {
+    max-width: 90%;
+    font-size: 0.9rem;
+  }
+}
