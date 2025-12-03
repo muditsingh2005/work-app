@@ -37,8 +37,7 @@ const Sidebar = ({
     } else if (user?.role === "startup") {
       return [
         ...baseItems,
-        { path: "/dashboard/post-project", label: "Post Project", icon: "➕" },
-        { path: "/dashboard/my-projects", label: "My Projects", icon: "📋" },
+        { path: "/startup/create-project", label: "Post Project", icon: "➕" },
         {
           path: "/dashboard/hired-students",
           label: "Hired Students",
