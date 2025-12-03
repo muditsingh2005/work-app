@@ -21,6 +21,8 @@ const StudentDashboard = () => {
   const [hasFetched, setHasFetched] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "", type: "" });
+  const [resumeUrl, setResumeUrl] = useState(userProfile?.resumeUrl || null);
+  const [uploadingResume, setUploadingResume] = useState(false);
 
   const fetchDashboardData = useCallback(async () => {
     if (hasFetched) return;
@@ -72,6 +74,12 @@ const StudentDashboard = () => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
+  useEffect(() => {
+    if (userProfile?.resumeUrl) {
+      setResumeUrl(userProfile.resumeUrl);
+    }
+  }, [userProfile]);
+
   const getStatusBadgeClass = (status) => {
     const statusMap = {
       pending: "badge-warning",
@@ -109,6 +117,63 @@ const StudentDashboard = () => {
     }
     showToast("Profile updated successfully", "success");
     setIsEditModalOpen(false);
+  };
+
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (file.type !== "application/pdf") {
+      showToast("Please select a PDF file", "error");
+      e.target.value = "";
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      showToast("File size must be less than 10MB", "error");
+      e.target.value = "";
+      return;
+    }
+
+    try {
+      setUploadingResume(true);
+
+      const formData = new FormData();
+      formData.append("resume", file);
+
+      const response = await studentDashboardAPI.uploadResume(formData);
+
+      if (response.data?.resumeUrl) {
+        setResumeUrl(response.data.resumeUrl);
+        // Refresh the profile to update across dashboard
+        if (refreshProfile) {
+          await refreshProfile();
+        }
+        showToast(
+          resumeUrl
+            ? "Resume updated successfully"
+            : "Resume uploaded successfully",
+          "success"
+        );
+      }
+    } catch (err) {
+      console.error("Error uploading resume:", err);
+      showToast(
+        err.response?.data?.message || "Failed to upload resume",
+        "error"
+      );
+    } finally {
+      setUploadingResume(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleViewResume = () => {
+    if (resumeUrl) {
+      window.open(resumeUrl, "_blank");
+    }
   };
 
   if (loading) {
@@ -225,6 +290,86 @@ const StudentDashboard = () => {
               </div>
             </div>
           )}
+        </div>
+      </motion.div>
+
+      {/* Resume Upload Section */}
+      <motion.div
+        className="resume-upload-card"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <div className="card-header">
+          <h2>📄 Your Resume</h2>
+        </div>
+        <div className="resume-upload-content">
+          <div className="resume-upload-wrapper">
+            <input
+              type="file"
+              id="resume-upload"
+              accept=".pdf,application/pdf"
+              onChange={handleResumeUpload}
+              disabled={uploadingResume}
+              style={{ display: "none" }}
+            />
+            <label
+              htmlFor="resume-upload"
+              className={`resume-upload-btn ${
+                uploadingResume ? "uploading" : ""
+              }`}
+            >
+              {uploadingResume ? (
+                <>
+                  <span className="upload-spinner">⏳</span>
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <span className="upload-icon">📤</span>
+                  <span>{resumeUrl ? "Update Resume" : "Upload Resume"}</span>
+                  <span className="upload-hint">PDF only, max 10MB</span>
+                </>
+              )}
+            </label>
+
+            {resumeUrl && (
+              <motion.div
+                className="resume-display"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.button
+                  className="resume-view-btn"
+                  onClick={handleViewResume}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <svg
+                    className="resume-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  <span>View Resume</span>
+                </motion.button>
+                <p className="resume-status">✓ Resume uploaded</p>
+              </motion.div>
+            )}
+          </div>
         </div>
       </motion.div>
 

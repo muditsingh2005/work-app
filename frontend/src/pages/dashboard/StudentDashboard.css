@@ -194,6 +194,137 @@
   color: #2d3748;
 }
 
+/* Resume Upload Card */
+.resume-upload-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.resume-upload-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+}
+
+.resume-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.resume-upload-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 3rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  width: 100%;
+}
+
+.resume-upload-btn:hover:not(.uploading) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.resume-upload-btn.uploading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.upload-spinner {
+  font-size: 2rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.upload-hint {
+  font-size: 0.85rem;
+  font-weight: 400;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.resume-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.resume-view-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+}
+
+.resume-view-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+}
+
+.resume-view-btn:active {
+  transform: translateY(0);
+}
+
+.resume-icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+}
+
+.resume-status {
+  font-size: 0.9rem;
+  color: #38ef7d;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .skills-showcase h3 {
   font-size: 1.1rem;
   font-weight: 600;
@@ -634,6 +765,14 @@
     grid-template-columns: 1fr;
   }
 
+  .resume-upload-btn {
+    padding: 1.5rem 2rem;
+  }
+
+  .resume-upload-wrapper {
+    max-width: 100%;
+  }
+
   .dashboard-toast {
     min-width: auto;
     max-width: 90%;
@@ -654,7 +793,8 @@
 
 @media (max-width: 480px) {
   .section,
-  .profile-overview-card {
+  .profile-overview-card,
+  .resume-upload-card {
     padding: 1.5rem;
   }
 
@@ -675,5 +815,19 @@
 
   .apply-button {
     width: 100%;
+  }
+
+  .resume-upload-btn {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .upload-icon {
+    font-size: 2rem;
+  }
+
+  .resume-view-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
   }
 }
